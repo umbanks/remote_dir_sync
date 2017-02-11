@@ -1,5 +1,0 @@
-package syncRemote
-
-import (
-    "testing"
-)

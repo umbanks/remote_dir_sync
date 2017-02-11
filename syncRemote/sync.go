@@ -85,7 +85,9 @@ func goGetter(path string, zipDest string) error {
     return nil
 }
 
-func downloadAndSave(path string, timeStampPop <-chan int64, xmlStringPush chan<- gotXML){
+// runner is the function that is executed as a goroutine, accepting timestamps as filenames
+// and pushing the parsed xml files to the channel
+func runner(path string, timeStampPop <-chan int64, xmlStringPush chan<- gotXML){
     for timeStamp := range timeStampPop {
         dest := strconv.FormatInt(timeStamp, 10)
         zipDest := dest + ".zip"
@@ -128,9 +130,9 @@ func Sync(path string) {
     latestTime := mRedis.GetLastTime()
 
     // 5 is arbitrary, it wouldn't be difficult to tune this to an optimal
-    // value, or even make it dynamic based on memory, network traffic, etc.
+    // value, or even make it dynamic based on memory, network traffic, cpu usage, etc.
     for i := 0; i < 5; i++ {
-        go downloadAndSave(path, namePush, xmlPop)
+        go runner(path, namePush, xmlPop)
     }
 
     log.Printf("Found %d files for download", len(nameSlice))
