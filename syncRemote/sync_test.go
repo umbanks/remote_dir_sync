@@ -1,0 +1,5 @@
+package syncRemote
+
+import (
+    "testing"
+)
